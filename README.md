@@ -1,10 +1,10 @@
-# Remote control Garage: Bucket As A Service - Instable
+# Garage - Bucket As A Service (WIP)
 
 ## Prérequis
 
 - Python3
 - Pip3
-- Une instance Garage fonctionnelle
+- Une instance [Garage](https://github.com/deuxfleurs-org/garage) fonctionnelle
 
 ## Installation des dépendances
 
@@ -16,8 +16,9 @@
 - On ajoute l'URL de l'endpoint admin de garage, avec son token admin
 - On lance avec un python3 main.py
 
-
 ## WIP / non-fonctionnel
 
 - Effacement des projets
 - Gestion des alias
+- Compilation d'une image Docker
+- Création d'un opérateur Kubernetes

@@ -1,0 +1,58 @@
+name: release-tag
+
+# on: push
+on: manual
+
+env:
+  DOCKER_REPO: repo-docker.sourdin.local
+  DOCKER_LATEST: latest
+  ACTIONS_RUNTIME_TOKEN: ''
+  DOCKER_REGISTRY: ${{ secrets.REGISTRY }}          
+  USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+  PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
+  registries: repo-docker.sourdin.local
+  GITHUB_TOKEN: ''
+jobs:
+  release-image:
+    runs-on: ubuntu-latest
+    container:
+      image: repo-docker.sourdin.local/toolkitv2:latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # all history for all branches and tags
+      - name: Login to Nexus3
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+      - name: Get Meta
+        id: meta
+        run: |
+          echo REPO_NAME=$(echo ${GITHUB_REPOSITORY} | awk -F"/" '{print $2}') >> $GITHUB_OUTPUT
+          echo REPO_VERSION=$(git describe --tags --always | sed 's/^v//') >> $GITHUB_OUTPUT          
+      - name: Load docker certs
+        id: dockercerts
+        run: |
+          cd /tmp 
+          wget --no-check-certificate https://nexus.sourdin.local/repository/public_raw/certs/docker-certs.tar.gz 
+          tar -xvf docker-certs.tar.gz                           
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        env:
+          ACTIONS_RUNTIME_TOKEN: ""
+          DOCKER_HOST: tcp://localhost:2376
+          DOCKER_TLS_VERIFY: 1
+          DOCKER_CERT_PATH: /tmp/certs/client
+        with:
+          context: .
+          file: ./Dockerfile
+          platforms: |
+            linux/amd64                                   
+          push: true
+          tags: |
+            ${{ env.DOCKER_REPO }}/${{ steps.meta.outputs.REPO_NAME }}:${{ env.DOCKER_LATEST }}                        
+      - name: Generate trivy report
+        run: trivy image  ${{ env.DOCKER_REPO }}/${{ steps.meta.outputs.REPO_NAME }}:${{ env.DOCKER_LATEST }}

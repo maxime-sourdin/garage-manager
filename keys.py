@@ -1,6 +1,7 @@
 import time
 from garage_admin_sdk.api import key_api
 from garage_admin_sdk.model.add_key_request import AddKeyRequest
+import garage_admin_sdk
 
 
 def create_key(key_name,api_client):
@@ -18,8 +19,9 @@ def create_key(key_name,api_client):
         buckets = api_response['buckets']
         print(time.strftime("%H:%M:%S"), "- Creating key - ", key_id, " - ", key_name, " - ", key_secret)
         return key_id, key_name, key_secret
-    except:
+    except garage_admin_sdk.ApiException as e:
         print(time.strftime("%H:%M:%S"), "- Unable to create key - ", key_id, " - ", key_name)
+        print(e)
 
 def list_keys(s3_config,api_client):
     api_instance = key_api.KeyApi(api_client)
@@ -31,8 +33,9 @@ def list_keys(s3_config,api_client):
             key_name = api_response[i]['name']
             print(time.strftime("%H:%M:%S"), "- Key - ", key_id, " - ", key_name)
         return key_id
-    except:
+    except garage_admin_sdk.ApiException as e:
         print(time.strftime("%H:%M:%S"), "- Unable to list key")
+        print(e)
 
 
 def inspect_key(key_id,api_client):
@@ -53,8 +56,9 @@ def inspect_key(key_id,api_client):
             bucket_perms = buckets[i]['permissions']
         print(time.strftime("%H:%M:%S"), "- Key inspection - ", key_id, " - ", key_name, " - ", bucket_name)
         return(bucket_id, key_id, key_name)
-    except:
+    except garage_admin_sdk.ApiException as e:
         print(time.strftime("%H:%M:%S"), "- Unable to inspect key - ", key_id)
+        print(e)
 
 def search_key(search,api_client):
     # # Create an instance of the API class
@@ -74,8 +78,9 @@ def search_key(search,api_client):
             bucket_perms = buckets[i]['permissions']
         print(time.strftime("%H:%M:%S"), "- Key found - ", search, " - ", key_id)
         return(key_id, key_name)
-    except:
+    except garage_admin_sdk.ApiException as e:
         print(time.strftime("%H:%M:%S"), "- Unable to find key - ", key_id)
+        print(e)
 
 def key_exist(search,api_client):
     # # Create an instance of the API class
@@ -84,7 +89,7 @@ def key_exist(search,api_client):
         api_response = api_instance.get_key(search=search)
         print(time.strftime("%H:%M:%S"), "- Key exist - ", search)
         return True
-    except:
+    except garage_admin_sdk.ApiException:
         print(time.strftime("%H:%M:%S"), "- Key doesn't exist - ", search)
         return False
 
@@ -95,5 +100,6 @@ def delete_key(key_id,api_client):
         # List AK
         api_instance.delete_key(id=key_id)
         print(time.strftime("%H:%M:%S"), "- Deleting key - ", key_id)
-    except:
+    except garage_admin_sdk.ApiException as e:
         print(time.strftime("%H:%M:%S"), "- Unable to delete key - ", key_id)
+        print(e)

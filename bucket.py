@@ -30,13 +30,14 @@ def create_bucket(bucket_name, alias, key_id, api_client):
             bucket_name,
             " - ",
             bucket_id)
-    except:
+    except garage_admin_sdk.ApiException as e:
         print(
             time.strftime("%H:%M:%S"),
             "- Unable to create bucket - ",
             bucket_name,
             " - ",
             bucket_id)
+        print(e)
 
 
 def delete_bucket(bucket_id, api_client):
@@ -45,12 +46,12 @@ def delete_bucket(bucket_id, api_client):
     try:
         api_instance.delete_bucket(bucket_id)
         print(time.strftime("%H:%M:%S"), "- Deleting bucket - ", bucket_id)
-    except:
+    except garage_admin_sdk.ApiException as e:
         print(
             time.strftime("%H:%M:%S"),
             "- Unable to delete bucket - ",
             bucket_id)
-
+        print(e)
 
 def list_bucket(api_client):
     # # Create an instance of the API class
@@ -70,8 +71,9 @@ def list_bucket(api_client):
                 " - ",
                 bucket_id)
             return bucket_id, bucket_name
-    except:
+    except garage_admin_sdk.ApiException as e:
         print(time.strftime("%H:%M:%S"), "- Unable to list bucket ")
+        print(e)
 
 
 def inspect_bucket(search, api_client):
@@ -83,11 +85,12 @@ def inspect_bucket(search, api_client):
         bucket_id = api_response['id']
         print(time.strftime("%H:%M:%S"), "- Bucket - ", bucket_id)
         return bucket_id
-    except:
+    except garage_admin_sdk.ApiException as e:
         print(
             time.strftime("%H:%M:%S"),
             "- Unable to inspect bucket - ",
             bucket_id)
+        print(e)
 
 
 def bucket_exist(search, api_client):

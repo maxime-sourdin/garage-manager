@@ -30,8 +30,9 @@ def create_project(project_name, bucket_name,s3_config):
             key_id, key_name, key_secret = create_key(key_name,api_client)
         if bucket_exist(bucket_name,api_client) is False:
             create_bucket(bucket_name,alias,key_id,api_client)        
-   except:
+   except garage_admin_sdk.ApiException as e:
         print(time.strftime("%H:%M:%S"), "- Unable to create project - ", project_name)
+        print(e)
       
 def delete_project(project_name,s3_config):
    bucket_name = project_name
@@ -42,8 +43,9 @@ def delete_project(project_name,s3_config):
         delete_key(key_id,api_client)
         delete_bucket(bucket_id,api_client)
         print(time.strftime("%H:%M:%S"), "- ", project_name, "deleted ")
-   except:
+   except garage_admin_sdk.ApiException as e:
         print(time.strftime("%H:%M:%S"), "- Unable to delete project - ", project_name)
+        print(e)
 
 create_project(s3_project_name, s3_bucket_name,s3_config)
 #delete_project(s3_project_name)

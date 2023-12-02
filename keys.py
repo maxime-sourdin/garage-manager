@@ -1,6 +1,5 @@
-import garage_admin_sdk,time
+import time
 from garage_admin_sdk.api import key_api
-from garage_admin_sdk.model.list_keys200_response_inner import ListKeys200ResponseInner
 from garage_admin_sdk.model.add_key_request import AddKeyRequest
 
 
@@ -19,7 +18,7 @@ def create_key(key_name,api_client):
         buckets = api_response['buckets']
         print(time.strftime("%H:%M:%S"), "- Creating key - ", key_id, " - ", key_name, " - ", key_secret)
         return key_id, key_name, key_secret
-    except garage_admin_sdk.ApiException as e:
+    except:
         print(time.strftime("%H:%M:%S"), "- Unable to create key - ", key_id, " - ", key_name)
 
 def list_keys(s3_config,api_client):
@@ -32,7 +31,7 @@ def list_keys(s3_config,api_client):
             key_name = api_response[i]['name']
             print(time.strftime("%H:%M:%S"), "- Key - ", key_id, " - ", key_name)
         return key_id
-    except garage_admin_sdk.ApiException as e:
+    except:
         print(time.strftime("%H:%M:%S"), "- Unable to list key")
 
 
@@ -54,7 +53,7 @@ def inspect_key(key_id,api_client):
             bucket_perms = buckets[i]['permissions']
         print(time.strftime("%H:%M:%S"), "- Key inspection - ", key_id, " - ", key_name, " - ", bucket_name)
         return(bucket_id, key_id, key_name)
-    except garage_admin_sdk.ApiException as e:
+    except:
         print(time.strftime("%H:%M:%S"), "- Unable to inspect key - ", key_id)
 
 def search_key(search,api_client):
@@ -75,7 +74,7 @@ def search_key(search,api_client):
             bucket_perms = buckets[i]['permissions']
         print(time.strftime("%H:%M:%S"), "- Key found - ", search, " - ", key_id)
         return(key_id, key_name)
-    except garage_admin_sdk.ApiException as e:
+    except:
         print(time.strftime("%H:%M:%S"), "- Unable to find key - ", key_id)
 
 def key_exist(search,api_client):
@@ -94,7 +93,7 @@ def delete_key(key_id,api_client):
     api_instance = key_api.KeyApi(api_client)
     try:
         # List AK
-        api_response = api_instance.delete_key(id=key_id)
+        api_instance.delete_key(id=key_id)
         print(time.strftime("%H:%M:%S"), "- Deleting key - ", key_id)
-    except garage_admin_sdk.ApiException as e:
+    except:
         print(time.strftime("%H:%M:%S"), "- Unable to delete key - ", key_id)

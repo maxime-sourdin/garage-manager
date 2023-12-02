@@ -1,10 +1,10 @@
 import os
-import garage_admin_sdk,time
-from garage_admin_sdk.api import bucket_api
+import garage_admin_sdk
+import time
 from garage_admin_sdk import Configuration
 from dotenv import load_dotenv
-from bucket import bucket_exist,inspect_bucket,list_bucket,delete_bucket,create_bucket
-from keys import create_key,list_keys,inspect_key,search_key,delete_key,key_exist
+from bucket import bucket_exist,inspect_bucket,delete_bucket,create_bucket
+from keys import create_key,search_key,delete_key,key_exist
 
 load_dotenv()
 
@@ -26,11 +26,11 @@ def create_project(project_name, bucket_name,s3_config):
    alias = bucket_name
    try:
     with garage_admin_sdk.ApiClient(s3_config) as api_client:
-        if key_exist(key_name,api_client) == False:
+        if key_exist(key_name,api_client) is False:
             key_id, key_name, key_secret = create_key(key_name,api_client)
-        if bucket_exist(bucket_name,api_client) == False:
+        if bucket_exist(bucket_name,api_client) is False:
             create_bucket(bucket_name,alias,key_id,api_client)        
-   except garage_admin_sdk.ApiException as e:
+   except:
         print(time.strftime("%H:%M:%S"), "- Unable to create project - ", project_name)
       
 def delete_project(project_name,s3_config):
@@ -42,7 +42,7 @@ def delete_project(project_name,s3_config):
         delete_key(key_id,api_client)
         delete_bucket(bucket_id,api_client)
         print(time.strftime("%H:%M:%S"), "- ", project_name, "deleted ")
-   except garage_admin_sdk.ApiException as e:
+   except:
         print(time.strftime("%H:%M:%S"), "- Unable to delete project - ", project_name)
 
 create_project(s3_project_name, s3_bucket_name,s3_config)
